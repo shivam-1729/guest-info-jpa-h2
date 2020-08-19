@@ -1,0 +1,14 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}"lang="en">
+<head>
+    <title>Home</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container main-content">
+    <h3>Admin page</h3>
+    <p th:text="'Number of users= '+${usercount}"></p>
+    </div>
+</div>
+</body>
+</html>
