@@ -1,6 +1,7 @@
 package com.frankmoley.security.app;
 
 import com.frankmoley.security.app.domain.Guest;
+import com.frankmoley.security.app.domain.MyUserDetails;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,12 +29,14 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Authentication loggeduser=SecurityContextHolder.getContext().getAuthentication() ;
-        Guest user= (Guest)loggeduser.getPrincipal();
-        String id= user.getId();
+        MyUserDetails user= (MyUserDetails)loggeduser.getPrincipal();
+        //User user= (User)loggeduser.getPrincipal();
+        int id= user.getId();
+        //String id="1" ;
         for (GrantedAuthority grantedAuthority : authorities) {
             System.out.println("role " + grantedAuthority.getAuthority());
             if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
-                redirectUrl = "/user/"+id;
+                redirectUrl = "/user/"+String.valueOf(id);
                 break;
             } else if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
                 redirectUrl = "/admin";

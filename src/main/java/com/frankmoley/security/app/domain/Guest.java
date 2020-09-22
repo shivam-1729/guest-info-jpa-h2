@@ -3,34 +3,52 @@ package com.frankmoley.security.app.domain;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Collection;
 import java.util.List;
 
 /**
  * @author Frank P. Moley III.
  */
-public class Guest extends User {
-    public Guest(String username, String password, boolean enabled, boolean accountNonExpired,
-                       boolean credentialsNonExpired, boolean accountNonLocked,
-                       Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        usercount++ ;
-    }
-    private static int usercount = 0;
-    private String id;
+@Entity
+@Table(name="users")
+public class Guest {
+
+//    private static int usercount = 0;
+    @Id
+    private int id;
+
+    @Column(name="firstname")
     private String firstName;
+    @Column(name="lastname")
     private String lastName;
+    @Column(name = "email")
     private String emailAddress;
+    @Column(name="address")
     private String address;
+    @Column(name="country")
     private String country;
+    @Column(name="phone")
     private String phoneNumber;
 
-    public static int getUsercount() { return usercount; }
-    public String getId() {
+    @Column(name = "username")
+    private String username ;
+    @Column(name = "password")
+    private String password ;
+    @Column(name = "authorities")
+    private String roles ;
+    @Column(name="enabled")
+    private boolean enabled ;
+
+    //public static int getUsercount() { return usercount; }
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -82,21 +100,36 @@ public class Guest extends User {
         this.phoneNumber = phoneNumber;
     }
 
-    public Guest(String id, String firstName, String lastName, String emailAddress, String address,
-                 String country, String phoneNumber, String username, String password, List<GrantedAuthority> authorities,
-                 boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked) {
+    public String getUsername() {
+        return username;
+    }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired,
-                accountNonLocked, authorities) ;
-        this.id=id;
-        this.firstName=firstName;
-        this.lastName=lastName;
-        this.emailAddress=emailAddress;
-        this.address=address;
-        this.country=country;
-        this.phoneNumber=phoneNumber;
-        usercount++ ;
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

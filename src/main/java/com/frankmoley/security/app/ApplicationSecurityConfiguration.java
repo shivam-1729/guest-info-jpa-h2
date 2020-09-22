@@ -1,8 +1,8 @@
 package com.frankmoley.security.app;
 
-import com.frankmoley.security.app.domain.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -19,9 +19,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.context.request.RequestContextListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,31 +35,31 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
     @Autowired
     AuthenticationSuccessHandler successHandler;
 
-    @Bean
-    public GrantedAuthoritiesMapper authoritiesMapper(){
-        SimpleAuthorityMapper authorityMapper = new SimpleAuthorityMapper();
-        authorityMapper.setConvertToUpperCase(true);
-        authorityMapper.setDefaultAuthority("USER");
-        return authorityMapper;
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new MyUserDetailsService();
-    };
+//    @Bean
+//    public GrantedAuthoritiesMapper authoritiesMapper(){
+//        SimpleAuthorityMapper authorityMapper = new SimpleAuthorityMapper();
+//        authorityMapper.setConvertToUpperCase(true);
+//        authorityMapper.setDefaultAuthority("USER");
+//        return authorityMapper;
+//    }
 
     @Autowired
-    @Qualifier("userDetailsService")
-    private UserDetailsService userDetailsService;
+    UserDetailsService userDetailsService;
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder getpasswordEncoder() {
+        return NoOpPasswordEncoder.getInstance() ;
     };
+
+    @Bean
+    @ConditionalOnMissingBean(RequestContextListener.class)
+    public RequestContextListener requestContextListener() {
+        return new RequestContextListener();
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userDetailsService);
     }
 
     @Override
@@ -66,6 +68,7 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "/index", "/css/*", "/js/*").permitAll()
+                .antMatchers("/h2-console").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -77,6 +80,8 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .clearAuthentication(true)
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/logout-success").permitAll();
+
+        http.headers().frameOptions().disable();
     }
 
 }
